@@ -7,10 +7,12 @@ import com.dorlinc.authapi.model.repository.TokenRepository;
 import com.dorlinc.authapi.model.repository.UserRepository;
 import com.dorlinc.authapi.password_enc.PasswordEncryptor;
 import com.dorlinc.authapi.token.SHA256TokenGenerator;
-import com.dorlinc.authapi.token.TokenGenerator;
+import org.apache.commons.codec.DecoderException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
 
 @Controller
 @RequestMapping(path="/authAPI")
@@ -31,7 +33,7 @@ public class LoginController {
     }
 
     @GetMapping(path="/login")
-    public @ResponseBody String getToken(@RequestParam String userName, @RequestParam String userPassword) throws IncorrectPasswordException {
+    public @ResponseBody String getToken(@RequestParam String userName, @RequestParam String userPassword) throws IncorrectPasswordException, DecoderException, UnsupportedEncodingException {
         String password = userRepository.findById(userName)
                 .orElseThrow(AccountNotFoundException::new)
                 .getUserPassword();
@@ -41,11 +43,11 @@ public class LoginController {
         if (!password.equals(checkPassword)){
             throw new IncorrectPasswordException();
         }else{
-            Token token = tokenRepository.save(generator.generateToken(userName));
+            Token token = tokenRepository.save(generator.generateToken());
             userRepository.findById(userName)
                     .orElseThrow(AccountNotFoundException::new)
                     .setToken(token);
-            return "You successfully logged in.";
+            return token.toString();
         }
     }
 }

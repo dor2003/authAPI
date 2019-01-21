@@ -3,6 +3,7 @@ package com.dorlinc.authapi.model.data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import javax.persistence.Entity;
@@ -19,11 +20,11 @@ public class User {
     private String userName;
 
     @NonNull
-    @JsonView(DATA.class)
+    @JsonView(PROFILE.class)
     private String firstName;
 
     @NonNull
-    @JsonView(DATA.class)
+    @JsonView(PROFILE.class)
     private String lastName;
 
     @NonNull
@@ -31,6 +32,7 @@ public class User {
     private String userPassword;
 
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     @OneToOne
     private Token token;
 
@@ -87,5 +89,5 @@ public class User {
 
     public static class CREDENTIALS {}
 
-    public static class DATA {}
+    public static class PROFILE {}
 }
